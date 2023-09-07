@@ -1,31 +1,40 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { ConvertPipe } from './convert.pipe';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'currency_convertor';
-  inputForm: any = new FormGroup({
-    fromCurrency: new FormControl({ value: '', disabled: false }),
-    toCurrency: new FormControl({ value: '', disabled: false }),
-    amount: new FormControl({ value: '', disabled: false }),
-    submitButton: new FormControl({ value: '', disabled: false }),
-    resValue: new FormControl({ value: '', disabled: false })
-  })
-  currency = [{ "id": "USD", "value": 1.126735 },
-  { "id": "GBP", "value": 0.876893 },
-  { "id": "INR", "value": 79.677056 }
-  ]
-  ngOninit() {
-
-  }
+  title = 'reg_form';
+  regForm: any = new FormGroup({
+    inputFirstname: new FormControl({ value: '', disabled: false }, [
+      Validators.required, Validators.pattern('^[a-zA-z]'),
+      Validators.minLength(3), Validators.maxLength(50)
+    ]),
+    gender: new FormControl({ value: '', disabled: false }, Validators.required),
+    country: new FormControl({ value: '', disabled: false }, Validators.required),
+    city: new FormControl({ value: '', disabled: false }, Validators.required),
+    inputAge: new FormControl({ value: '', disabled: false }, [Validators.required,Validators.pattern('^[0-9]*$')])
+  });
+  gender = [{ "sex": "Male" }, { "sex": "Female" }];
+  country = [{ "code": "US" }, { "code": "Canada" }, { "code": "India" }, { "code": "Russia" }, { "code": "China" }, { "code": "Dubai" }];
   submitButton() {
-    let val = new ConvertPipe().transform(this.inputForm.value.fromCurrency,this.inputForm.value.toCurrency,this.inputForm.value.amount )
-    val = String(val) + '.00'
-    this.inputForm.value.resValue = val
+    console.log(this.regForm)
+  }
+  onCheckChange(eve: any) {
+    if(this.regForm.get('gender').value == ''){
+      this.regForm.get('gender').setValue(eve.target.value)
+    }
+  }
+  selected(eve: any) {
+    if (eve.target.value == 'Canada' || eve.target.value == 'US' ||eve.target.value == 'India') {
+      this.regForm.get('inputAge').setValidators(Validators.required);
+    } else {
+      this.regForm.get('inputAge').clearValidators();
+    }
+    this.regForm.controls['inputAge'].updateValueAndValidity();
   }
 }
